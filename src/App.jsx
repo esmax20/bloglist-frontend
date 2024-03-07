@@ -176,7 +176,7 @@ const App = () => {
           key={blog.id}
           blog={blog}
           toggleLike={() => toggleLikeOf(blog.id)}
-          toggleRemove={() => toggleDeleteOf(blog.id)} 
+          toggleRemove={() => toggleDeleteOf(blog.id)}
           username={user.username}
           />
       )}
