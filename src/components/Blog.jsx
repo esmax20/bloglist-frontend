@@ -18,14 +18,13 @@ const Blog = ({ blog, toggleLike, toggleRemove, username }) => {
 
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       {blog.title} &nbsp;
       <button onClick={toggleView}>{visible ? 'hide' : 'view'}</button>
       {visible &&
         <><div>{blog.url}</div>
           <div>
-            likes
-            {blog.likes} &nbsp;
+            <span className='likes'>likes {blog.likes}</span> &nbsp;
             <button onClick={toggleLike}>like</button>
           </div>
           <div>{blog.author}</div>
@@ -36,10 +35,6 @@ const Blog = ({ blog, toggleLike, toggleRemove, username }) => {
                 : <></>
               : <button onClick={toggleRemove}>Remove</button>
           }
-
-            
-
-          
         </>
       }
     </div>

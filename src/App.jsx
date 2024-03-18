@@ -5,17 +5,11 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
-  // const [errorMessage, setErrorMessage] = useState(null)
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
-  const [newLikes, setNewLikes] = useState('')
   const [notifMessage, setNotifMessage] = useState(null)
   const [notifType, setNotifType] = useState(null)
   const blogFormRef = useRef()
@@ -24,7 +18,7 @@ const App = () => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
-  }, [])
+  }, [blogs])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -46,16 +40,10 @@ const App = () => {
         setTimeout(() => {
           setNotifMessage(null)
         }, 5000)
-        setNewTitle('')
-        setNewAuthor('')
-        setNewUrl('')
-        setNewLikes('')
       })
   }
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-
+  const handleLogin = async (username, password) => {
     try {
       const user = await loginService.login({
         username, password,
@@ -67,8 +55,6 @@ const App = () => {
 
       blogService.setToken(user.token)
       setUser(user)
-      setUsername('')
-      setPassword('')
     } catch (exception) {
       setNotifMessage('Wrong username or password')
       setNotifType('error')
@@ -79,30 +65,9 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <div>
-      <h2>Log in to application</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </div>
+    <LoginForm
+      handleSubmit={handleLogin}
+    />
   )
 
   const toggleDeleteOf = id => {
@@ -136,7 +101,7 @@ const App = () => {
     blogService
       .update(id, changedBlog)
       .then(returnedBlog => {
-        setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+        setBlogs(blogs.map(blog => blog.id !== id ? blog : changedBlog))
       })
       .catch(error => console.log('error:', error.message))
   }
@@ -163,7 +128,7 @@ const App = () => {
     <div>
       <h1>Blogs List</h1>
       <Notification message={notifMessage} type={notifType} />
-      <p>{user.name} logged-in</p>
+      <p>{user.name} logged-in as {user.username}</p>
       <form onSubmit={() => window.localStorage.removeItem('loggedBlogappUser')}>
         <button type="submit">Logout</button>
       </form>
@@ -178,7 +143,7 @@ const App = () => {
           toggleLike={() => toggleLikeOf(blog.id)}
           toggleRemove={() => toggleDeleteOf(blog.id)}
           username={user.username}
-          />
+        />
       )}
     </div>
   )
